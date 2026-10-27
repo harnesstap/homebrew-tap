@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  style-audit:
+    name: brew style and audit
+    # The online cask audit mounts the DMG with hdiutil, so this runs on macOS.
+    runs-on: macos-latest
+    steps:
+      - name: Set up Homebrew
+        id: setup-homebrew
+        uses: Homebrew/actions/setup-homebrew@main
+
+      - name: Check out tap
+        uses: actions/checkout@v4
+
+      # setup-homebrew links this checkout as the harnesstap/tap tap.
+      - name: Trust this tap
+        run: brew trust harnesstap/tap
+
+      - name: brew style
+        run: brew style harnesstap/tap
+
+      - name: brew audit
+        env:
+          HOMEBREW_GITHUB_API_TOKEN: ${{ github.token }}
+        run: |
+          brew audit --strict --online --formula harnesstap/tap/harnesstap
+          brew audit --strict --online --cask harnesstap/tap/harnesstap-desktop
+
+  formula:
+    name: formula install and test (${{ matrix.os }})
+    needs: style-audit
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@main
+
+      - name: Check out tap
+        uses: actions/checkout@v4
+
+      - name: Install
+        run: brew install --verbose harnesstap/tap/harnesstap
+
+      - name: Test
+        run: brew test --verbose harnesstap/tap/harnesstap
+
+      - name: Run the CLI
+        env:
+          HARNESSTAP_TELEMETRY: "0"
+        run: |
+          harnesstap --version
+          ht --help >/dev/null
+
+  cask:
+    name: cask install (${{ matrix.os }})
+    needs: style-audit
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-latest
+          - macos-15-intel
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@main
+
+      - name: Check out tap
+        uses: actions/checkout@v4
+
+      - name: Install
+        run: brew install --cask --verbose harnesstap/tap/harnesstap-desktop
+
+      # Gatekeeper is not exercised here (CI never launches the app); check
+      # the bundle landed and carries the ad-hoc signature the release applies.
+      - name: Check the app bundle
+        run: |
+          test -d /Applications/HarnessTap.app
+          codesign --verify --deep --verbose=2 /Applications/HarnessTap.app
+
+      - name: Uninstall
+        run: brew uninstall --cask --zap harnesstap-desktop
