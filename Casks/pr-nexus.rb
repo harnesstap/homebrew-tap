@@ -1,6 +1,6 @@
 cask "pr-nexus" do
-  version "0.1.0"
-  sha256 "c08d0bcea9bdadf9376b46b59697ac4b8627e8ebe5563bffdd6fdd7c086df1d9"
+  version "0.1.1"
+  sha256 "909258ab4496c4bf0e6164f7d645226f7f8b0f42123c5175e8dd5a4024f701ea"
 
   url "https://github.com/harnesstap/pr-nexus/releases/download/v#{version}/PR-Nexus_#{version}_aarch64.dmg"
   name "PR Nexus"
