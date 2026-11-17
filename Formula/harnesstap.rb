@@ -1,8 +1,8 @@
 class Harnesstap < Formula
   desc "Agent harness configuration toolkit for Claude Code, Codex, Cursor and more"
   homepage "https://harnesstap.com"
-  url "https://registry.npmjs.org/harnesstap/-/harnesstap-1.6.2.tgz"
-  sha256 "1bd6fe095da71ad0dad60954f612315d9d08efbb9711d3bef796ea1090ab7405"
+  url "https://registry.npmjs.org/harnesstap/-/harnesstap-1.6.3.tgz"
+  sha256 "4368356fa1fe1e2ffaec9f610fefefd141fd2aad8fd9f2e59ad2c233aa8ce6fe"
   license "Apache-2.0"
 
   livecheck do

@@ -1,9 +1,9 @@
 cask "harnesstap-desktop" do
   arch arm: "aarch64", intel: "x64"
 
-  version "1.6.2"
-  sha256 arm:   "5098ccc94229deb04aa6eca71bbf74ebc08101c49d07eac573f6f7bb5812aa32",
-         intel: "af853c0259529174cce65a218b24102bf2f0bf5cdb76beb4d08a764a0685b066"
+  version "1.6.3"
+  sha256 arm:   "84b66a6310590d2dd04b1d6318b747cc261fad1f9bd2095b98abc9369435fa20",
+         intel: "9c5297f9ea63327691dc2173c3b8b967d26325cefb675ccc7efb48e4ac23c66d"
 
   url "https://github.com/harnesstap/harnesstap/releases/download/v#{version}/HarnessTap_#{version}_#{arch}.dmg"
   name "HarnessTap"
